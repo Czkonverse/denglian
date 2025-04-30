@@ -61,6 +61,7 @@ contract Bank {
                             candidates[j],
                             candidates[i]
                         );
+                        emit Top3Updated(s_top3Users);
                     }
                 }
             }
