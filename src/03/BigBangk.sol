@@ -1,12 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-contract Bank {
+import "./IBank.sol";
+
+contract Bank is IBank {
     error Bank__SendZeroMoney();
     error Bank__NotOwner();
     error Bank__WithdrawMoneyFailed();
 
-    address public immutable i_owner;
+    address public i_owner;
     uint256 public constant LEAST_MONEY = 0 ether;
 
     uint private s_recordsCount;
@@ -18,12 +20,10 @@ contract Bank {
     event Top3Updated(address[] top3Users);
 
     constructor() {
-        // onwer
         i_owner = msg.sender;
     }
 
-    function deposit() public payable {
-        // deposit money > 0
+    function deposit() public payable virtual {
         if (msg.value <= LEAST_MONEY) {
             revert Bank__SendZeroMoney();
         }
@@ -35,17 +35,12 @@ contract Bank {
     }
 
     function updateTop3(address user) public {
-        // check if user is already in top3
         for (uint8 i = 0; i < s_top3Users.length; i++) {
-            if (s_top3Users[i] == user) {
-                return;
-            }
+            if (s_top3Users[i] == user) return;
         }
 
         if (s_top3Users.length < 3) {
             s_top3Users.push(user);
-
-            emit Top3Updated(s_top3Users);
         } else {
             address[4] memory candidates;
 
@@ -61,32 +56,67 @@ contract Bank {
                             candidates[j],
                             candidates[i]
                         );
-                        emit Top3Updated(s_top3Users);
                     }
                 }
             }
 
-            // update top3
             for (uint8 i = 0; i < 3; i++) {
                 s_top3Users[i] = candidates[i];
             }
         }
+
+        emit Top3Updated(s_top3Users);
     }
 
     modifier onlyOwner() {
-        if (msg.sender != i_owner) {
-            revert Bank__NotOwner();
-        }
+        if (msg.sender != i_owner) revert Bank__NotOwner();
         _;
     }
 
-    function withdraw() public onlyOwner {
-        // Withdraw logic
+    function withdraw() public virtual onlyOwner {
         (bool callSuccess, ) = payable(msg.sender).call{
             value: address(this).balance
         }("");
         if (!callSuccess) {
             revert Bank__WithdrawMoneyFailed();
         }
+    }
+}
+
+contract BigBank is Bank {
+    error BigBank__TooSmallDeposit();
+    error BigBank__NotAdmin();
+
+    uint256 public constant LEAST_DEPOSIT_MONEY = 0.001 ether;
+    address public i_admin;
+
+    constructor() {
+        i_admin = msg.sender;
+    }
+
+    // 最小存款检查 0.001 ether
+    modifier minDeposit() {
+        if (msg.value <= LEAST_DEPOSIT_MONEY) {
+            revert BigBank__TooSmallDeposit();
+        }
+        _;
+    }
+
+    // Admin检查
+    modifier onlyAdmin() {
+        if (msg.sender != i_admin) revert BigBank__NotAdmin();
+        _;
+    }
+
+    function deposit() public payable override minDeposit {
+        super.deposit();
+    }
+
+    function transferAdmin(address newAdmin) public onlyAdmin {
+        i_admin = newAdmin;
+    }
+
+    function withdraw() public override onlyOwner {
+        super.withdraw();
     }
 }
