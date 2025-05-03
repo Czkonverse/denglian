@@ -1,15 +1,19 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "./IBank.sol";
+interface IBank {
+    function withdraw() external;
+}
 
 contract Admin {
     error Admin__NotOwner();
 
     address public i_owner;
+    IBank public immutable bank;
 
-    constructor() {
+    constructor(address bankAddress) {
         i_owner = msg.sender;
+        bank = IBank(bankAddress);
     }
 
     modifier onlyOwner() {
@@ -19,7 +23,7 @@ contract Admin {
         _;
     }
 
-    function adminWithdraw(IBank bank) public onlyOwner {
+    function adminWithdraw() public onlyOwner {
         bank.withdraw();
     }
 

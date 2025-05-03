@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "./IBank.sol";
-
-contract Bank is IBank {
+contract Bank {
     error Bank__SendZeroMoney();
     error Bank__NotOwner();
     error Bank__WithdrawMoneyFailed();
@@ -114,9 +112,5 @@ contract BigBank is Bank {
 
     function transferAdmin(address newAdmin) public onlyAdmin {
         i_admin = newAdmin;
-    }
-
-    function withdraw() public override onlyOwner {
-        super.withdraw();
     }
 }
