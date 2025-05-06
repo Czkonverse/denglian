@@ -8,9 +8,6 @@ import {MyToken} from "./MyToken.sol";
 contract TokenBankMultiTokenV2 is TokenBankMultiToken {
     error TokenBankMultiTokenV2__TransferFailed();
 
-    // user => token => amount
-    mapping(address => mapping(address => uint)) s_depositionRecords;
-
     event TokenBankMultiTokenV2Deposit(
         address indexed user,
         address indexed token,
@@ -21,9 +18,8 @@ contract TokenBankMultiTokenV2 is TokenBankMultiToken {
         address _token,
         address _from,
         uint256 _amount
-    ) public {
-        // record the amount of deposition
-        s_depositionRecords[_from][_token] += _amount;
+    ) external {
+        s_deposits[_from][_token] += _amount;
         // emit the event
         emit TokenBankMultiTokenV2Deposit(_from, _token, _amount);
     }
