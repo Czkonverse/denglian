@@ -1,0 +1,27 @@
+{
+    "name": "Shark NFT - K Edition",
+    "description": "A cartoon-style NFT shark with a golden chain and the letter 'K'.",
+    "image": "ipfs://bafybeictvyku5z4wsrpdy7f2g6m7ylcpk3tn2xxkhhkln5swhczrk7wira",
+    "attributes": [
+        {
+            "trait_type": "Species",
+            "value": "Shark"
+        },
+        {
+            "trait_type": "Style",
+            "value": "Cartoon"
+        },
+        {
+            "trait_type": "Theme",
+            "value": "NFT"
+        },
+        {
+            "trait_type": "Accessory",
+            "value": "Gold Chain with K"
+        },
+        {
+            "trait_type": "Background",
+            "value": "Purple Geometric"
+        }
+    ]
+}

@@ -19,6 +19,11 @@ contract TokenBankMultiTokenV2 is TokenBankMultiToken {
         address _from,
         uint256 _amount
     ) external {
+        // whitelist
+        // Bank是支持多种toeken的，怎么进行token合约的确认呢？ # TODO: 如何确认token的合约地址 - 后续考虑升级白名单
+        if (msg.sender != _token) {
+            revert TokenBankMultiTokenV2__TransferFailed();
+        }
         s_deposits[_from][_token] += _amount;
         // emit the event
         emit TokenBankMultiTokenV2Deposit(_from, _token, _amount);
